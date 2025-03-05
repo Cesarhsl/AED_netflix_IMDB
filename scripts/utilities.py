@@ -5,20 +5,24 @@ import seaborn as sns
 import os
 from wordcloud import WordCloud
 
-# Configurações de estilo do Seaborn para gráficos mais claros
 sns.set(style="whitegrid")
 
 def load_data(filepath):
     """Carrega dados de um arquivo CSV."""
+    if not os.path.exists(filepath):
+        raise FileNotFoundError(f"Arquivo não encontrado: {filepath}")
     return pd.read_csv(filepath)
 
 def ensure_dir(directory):
     """Assegura que o diretório exista. Se não existir, cria o diretório."""
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    os.makedirs(directory, exist_ok=True)
 
 def plot_histogram(data, column, bins=30, title=None, xlabel=None, ylabel='Frequência', save_path=None):
     """Gera um histograma para uma coluna específica de um DataFrame e salva a figura."""
+    if column not in data.columns:
+        print(f"Aviso: Coluna {column} não encontrada!")
+        return
+    
     plt.figure(figsize=(10, 6))
     sns.histplot(data[column], bins=bins, kde=True)
     plt.title(title or f'Histograma de {column}')
@@ -28,95 +32,110 @@ def plot_histogram(data, column, bins=30, title=None, xlabel=None, ylabel='Frequ
     if save_path:
         ensure_dir(os.path.dirname(save_path))
         plt.savefig(save_path)
-    plt.close()
-
-def plot_correlation_matrix(data, title='Matriz de Correlação', save_path=None):
-    """Gera a matriz de correlação para um DataFrame e salva a figura."""
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(data.corr(), annot=True, fmt='.2f', cmap='coolwarm')
-    plt.title(title)
     
+    plt.show()
+
+def plot_top_imdb_titles(data, save_path=None, top_n=50):
+    """Gera um gráfico com os Top N títulos mais bem avaliados no IMDB."""
+    if 'title' not in data.columns or 'imdb_score' not in data.columns:
+        print("Erro: Colunas necessárias ('title', 'imdb_score') não encontradas.")
+        return
+
+    top_movies = data[['title', 'imdb_score']].dropna().sort_values(by='imdb_score', ascending=False).head(top_n)
+
+    plt.figure(figsize=(12, 8))
+    sns.barplot(x=top_movies['imdb_score'], y=top_movies['title'], palette="viridis")
+    plt.xlabel("IMDB Score")
+    plt.ylabel("Título")
+    plt.title(f"Top {top_n} Títulos com Maiores Notas no IMDB")
+    plt.gca().invert_yaxis()
+
     if save_path:
         ensure_dir(os.path.dirname(save_path))
         plt.savefig(save_path)
-    plt.close()
-
-def calculate_missing_values(data):
-    """Calcula a porcentagem de valores ausentes para cada coluna em um DataFrame."""
-    missing_values = data.isnull().sum()
-    missing_percentage = (missing_values / len(data)) * 100
-    return pd.DataFrame({'Número de Valores Ausentes': missing_values, 'Porcentagem': missing_percentage})
-
-def downsample_dataframe(data, n_samples):
-    """Reduz o tamanho de um DataFrame para um número especificado de amostras."""
-    if len(data) > n_samples:
-        return data.sample(n=n_samples)
-    return data
-
-def analyze_content_type(data, save_path=None):
-    """Analisa o número e a distribuição de tipos de conteúdo (MOVIE/SHOW) e salva a figura."""
-    content_counts = data['type'].value_counts()
-    print(content_counts)
     
-    plt.figure(figsize=(10, 6))
-    sns.boxplot(x='type', y='imdb_score', data=data)
-    plt.title('Distribuição de IMDB Score por Tipo de Conteúdo')
-    
+    plt.show()
+
+def plot_worst_imdb_titles(data, save_path=None, bottom_n=50):
+    """Gera um gráfico com os Bottom N títulos com as menores notas no IMDB."""
+    if 'title' not in data.columns or 'imdb_score' not in data.columns:
+        print("Erro: Colunas necessárias ('title', 'imdb_score') não encontradas.")
+        return
+
+    worst_movies = data[['title', 'imdb_score']].dropna().sort_values(by='imdb_score', ascending=True).head(bottom_n)
+
+    plt.figure(figsize=(12, 8))
+    sns.barplot(x=worst_movies['imdb_score'], y=worst_movies['title'], palette="Reds_r")
+    plt.xlabel("IMDB Score")
+    plt.ylabel("Título")
+    plt.title(f"Top {bottom_n} Títulos com Menores Notas no IMDB")
+    plt.gca().invert_yaxis()
+
     if save_path:
         ensure_dir(os.path.dirname(save_path))
         plt.savefig(save_path)
-    plt.close()
-
-def trend_analysis_by_year(data, save_path=None):
-    """Analisa tendências ao longo do tempo, como quantidade de conteúdo e pontuação média do IMDB por ano, e salva a figura."""
-    yearly_content = data.groupby('release_year').size()
-    yearly_imdb_score = data.groupby('release_year')['imdb_score'].mean()
     
-    fig, ax1 = plt.subplots(figsize=(14, 8))
+    plt.show()
 
-    color = 'tab:blue'
-    ax1.set_xlabel('Ano de Lançamento')
-    ax1.set_ylabel('Quantidade de Conteúdo', color=color)
-    ax1.plot(yearly_content.index, yearly_content, color=color)
-    ax1.tick_params(axis='y', labelcolor=color)
+def plot_most_voted_movies(data, save_path=None, top_n=50):
+    """Gera um gráfico dos filmes/séries mais votados no IMDB."""
+    if 'title' not in data.columns or 'imdb_votes' not in data.columns:
+        print("Erro: Colunas necessárias ('title', 'imdb_votes') não encontradas.")
+        return
 
-    ax2 = ax1.twinx()
-    color = 'tab:red'
-    ax2.set_ylabel('Pontuação Média do IMDB', color=color)
-    ax2.plot(yearly_imdb_score.index, yearly_imdb_score, color=color)
-    ax2.tick_params(axis='y', labelcolor=color)
+    most_voted = data[['title', 'imdb_votes']].dropna().sort_values(by='imdb_votes', ascending=False).head(top_n)
 
-    fig.tight_layout()
-    plt.title('Tendências de Conteúdo e Pontuação do IMDB por Ano')
-    
+    plt.figure(figsize=(12, 8))
+    sns.barplot(x=most_voted['imdb_votes'], y=most_voted['title'], palette="Blues_d")
+    plt.xlabel("Quantidade de Votos no IMDB")
+    plt.ylabel("Título")
+    plt.title(f"Top {top_n} Filmes/Séries com Maior Quantidade de Votos no IMDB")
+    plt.gca().invert_yaxis()
+
     if save_path:
         ensure_dir(os.path.dirname(save_path))
         plt.savefig(save_path)
-    plt.close()
+    
+    plt.show()
 
 def plot_description_wordcloud(data, save_path=None):
     """Gera uma nuvem de palavras a partir das descrições dos filmes e séries."""
-    all_descriptions = ' '.join(data['description'].dropna().values)
-    wordcloud = WordCloud(width=800, height=400, background_color ='white').generate(all_descriptions)
-    
+    if 'description' not in data.columns:
+        print("Aviso: Coluna 'description' não encontrada.")
+        return
+
+    descriptions = data['description'].dropna()
+    if descriptions.empty:
+        print("Aviso: Nenhuma descrição disponível para a nuvem de palavras.")
+        return
+
+    all_descriptions = ' '.join(descriptions.values)
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(all_descriptions)
+
     plt.figure(figsize=(10, 6))
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis('off')
     plt.title('Nuvem de Palavras das Descrições')
-    
+
     if save_path:
         ensure_dir(os.path.dirname(save_path))
         plt.savefig(save_path)
-    plt.close()
+    
+    plt.show()
 
 # Caminho base para salvar as figuras
-figures_path = 'C:\\Users\\Cesar\\OneDrive\\Área de Trabalho\\CODE\\AED_netflix_IMDB\\figures\\'
+figures_path = 'figures/'
 
 # Carregando o DataFrame
-data = load_data('c:\\Users\\Cesar\\OneDrive\\Área de Trabalho\\CODE\\AED_netflix_IMDB\\data\\processed\\ProcessedNetflixTVShowsandMovies.csv')
+try:
+    data = load_data('data/processed/ProcessedNetflixTVShowsandMovies.csv')
 
-# Exemplo de chamada de função com caminho completo para salvar as figuras
-plot_histogram(data, 'imdb_score', bins=20, title='Distribuição de Pontuações IMDB', save_path=figures_path + 'imdb_score_histogram.png')
-analyze_content_type(data, save_path=figures_path + 'content_type_distribution.png')
-trend_analysis_by_year(data, save_path=figures_path + 'imdb_score_trend_by_year.png')
-plot_description_wordcloud(data, save_path=figures_path + 'description_wordcloud.png')
+    # Gerar apenas os gráficos relevantes
+    plot_histogram(data, 'imdb_score', bins=20, title='Distribuição de Pontuações IMDB', save_path=figures_path + 'imdb_score_histogram.png')
+    plot_top_imdb_titles(data, save_path=figures_path + 'top_50_imdb_titles.png', top_n=50)
+    plot_worst_imdb_titles(data, save_path=figures_path + 'worst_50_imdb_titles.png', bottom_n=50)
+    plot_most_voted_movies(data, save_path=figures_path + 'most_voted_movies.png', top_n=50)
+    plot_description_wordcloud(data, save_path=figures_path + 'description_wordcloud.png')
+
+except FileNotFoundError as e:
+    print(f"Erro ao carregar os dados: {e}")
