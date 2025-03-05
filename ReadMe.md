@@ -1,47 +1,40 @@
-# Netflix TV Shows and Movies Data Analysis
+# **Análise de Dados de Séries e Filmes da Netflix 📊**
 
-## Description
-This project contains a detailed exploratory analysis of the "Netflix TV Shows and Movies" dataset. The goal is to uncover interesting patterns, trends over time, and insights into content ratings and viewer preferences.
+## **📌 Descrição**
+Este projeto realiza uma **análise exploratória detalhada** do conjunto de dados **"Netflix TV Shows and Movies"**, com o objetivo de identificar **padrões, tendências ao longo do tempo e insights sobre classificações de conteúdo e preferências do público**.
 
-## Project Structure
+Além disso, o projeto inclui um **modelo preditivo** para estimar a **pontuação IMDB** com base em características dos filmes e séries.
 
-The project is organized as follows:
+---
 
-- `data/`: Contains the datasets used in the project.
-  - `raw/`: Raw data downloaded or acquired.
-  - `processed/`: Cleaned and processed data ready for analysis.
-- `scripts/`: Scripts for data cleaning, preparation, and analysis.
-  - `data_preparation.py`: Script for data cleaning and preparation.
-  - `utilities.py`: Utility functions for analysis and visualization.
-- `figures/`: Charts and figures generated during the analysis.
-- `README.md`: This README file with project information.
+## **📂 Estrutura do Projeto**
+O projeto está organizado da seguinte forma:
 
+- **`data/`** → Contém os datasets utilizados no projeto:
+  - **`raw/`** → Dados brutos extraídos do Kaggle.
+  - **`processed/`** → Dados limpos e processados prontos para análise.
+- **`scripts/`** → Scripts para limpeza, preparação e análise dos dados:
+  - `data_preparation.py` → Script para tratamento e preparação dos dados.
+  - `utilities.py` → Funções auxiliares para análise e visualização.
+  - `split_data.py` → Divide os dados em treino e teste para Machine Learning.
+  - `train_model.py` → Treina o modelo preditivo de pontuação IMDB.
+  - `evaluate_model.py` → Avalia o desempenho do modelo preditivo.
+- **`figures/`** → Gráficos e figuras gerados durante a análise.
+- **`models/`** → Modelos treinados e arquivos de avaliação.
+- **`README.md`** → Arquivo de documentação do projeto.
 
+---
 
-## Environment Setup
-Follow the steps below to set up the necessary environment to run the scripts for this project.
+## **⚙️ Configuração do Ambiente**
+Siga os passos abaixo para configurar o ambiente necessário e executar os scripts do projeto.
 
-### Setup Steps
-1. Clone the repository, install Python 3.8 (if necessary), and the project dependencies.
-   ```bash
-   git clone https://github.com/yourusername/AED_netflix_IMDB.git
-   cd AED_netflix_IMDB
-   pip install -r requirements.txt
-   # Or for Conda users
-   conda env create -f environment.yml
-   conda activate AED_netflix_IMDB
+### **1️⃣ Instalação dos Requisitos**
+Certifique-se de ter o **Python 3.8 ou superior** instalado. Depois, clone o repositório e instale as dependências:
 
-## Running the Scripts
-To execute the analysis and visualization scripts, navigate to the scripts/ folder and run the corresponding Python files.
-
-## Visualizations
-The visualizations generated in the project offer various insights into the Netflix dataset, including:
-
-IMDB Score Distribution: Histograms showing the distribution of ratings for movies and TV shows, helping to understand the overall quality of available content.
-Content Trends by Year: Line charts revealing how the quantity of content (movies and TV shows) has changed over the years.
-Content Distribution by Age Rating: Bar charts indicating the amount of content available for different age groups.
-Word Cloud of Descriptions: A visual representation highlighting the most frequent words in the descriptions of movies and TV shows, giving an idea of prevalent themes and genres.
-Each visualization is saved in the figures/ folder, providing a quick and intuitive way to understand the characteristics of the dataset.
+```bash
+git clone https://github.com/yourusername/AED_netflix_IMDB.git
+cd AED_netflix_IMDB
+pip install -r requirements.txt
 
 ## Contributing
 Contributions to improve the project are welcome. Feel free to fork the repository and submit your suggestions through pull requests.
