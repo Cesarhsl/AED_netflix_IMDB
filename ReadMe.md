@@ -31,10 +31,11 @@ Siga os passos abaixo para configurar o ambiente necessário e executar os scrip
 ### **1️⃣ Instalação dos Requisitos**
 Certifique-se de ter o **Python 3.8 ou superior** instalado. Depois, clone o repositório e instale as dependências:
 
-```bash
+```
 git clone https://github.com/yourusername/AED_netflix_IMDB.git
 cd AED_netflix_IMDB
 pip install -r requirements.txt
+```
 
 ## Contributing
 Contributions to improve the project are welcome. Feel free to fork the repository and submit your suggestions through pull requests.
