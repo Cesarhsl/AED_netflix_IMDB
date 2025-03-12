@@ -2,11 +2,15 @@ import pandas as pd
 import numpy as np
 import os
 
+# Define a raiz do projeto como a pasta AED_netflix_IMDB
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 def load_data(filepath):
     """Carrega um arquivo CSV como um DataFrame do Pandas."""
-    if not os.path.exists(filepath):
-        raise FileNotFoundError(f"Arquivo não encontrado: {filepath}")
-    return pd.read_csv(filepath)
+    full_path = os.path.join(BASE_DIR, filepath)
+    if not os.path.exists(full_path):
+        raise FileNotFoundError(f"Arquivo não encontrado: {full_path}")
+    return pd.read_csv(full_path)
 
 def fill_missing_values(df, strategy='mean'):
     """Preenche valores ausentes em colunas numéricas do DataFrame."""
@@ -39,17 +43,18 @@ def normalize_column(df, column_name):
     return df
 
 if __name__ == "__main__":
-    filepath = 'data/raw/NetflixTVShowsandMovies.csv'
+    # Caminho do arquivo de entrada
+    raw_filepath = 'data/raw/NetflixTVShowsandMovies.csv'
 
     # Carregar os dados
-    df = load_data(filepath)
+    df = load_data(raw_filepath)
     print("Dados carregados com sucesso!")
 
     # Preencher valores ausentes
     df = fill_missing_values(df, strategy='mean')
     print("Valores ausentes preenchidos!")
 
-    # Remover duplicatas (corrigido)
+    # Remover duplicatas
     df = remove_duplicates(df)
     print("Duplicatas removidas!")
 
@@ -59,10 +64,10 @@ if __name__ == "__main__":
         print("Coluna imdb_score normalizada!")
 
     # Criar diretório de saída se não existir
-    output_dir = 'data/processed'
-    os.makedirs(output_dir, exist_ok=True)
+    processed_dir = os.path.join(BASE_DIR, 'data/processed')
+    os.makedirs(processed_dir, exist_ok=True)
 
     # Salvar o DataFrame limpo
-    output_path = os.path.join(output_dir, 'ProcessedNetflixTVShowsandMovies.csv')
+    output_path = os.path.join(processed_dir, 'ProcessedNetflixTVShowsandMovies.csv')
     df.to_csv(output_path, index=False)
     print(f"Arquivo processado salvo em {output_path}")
